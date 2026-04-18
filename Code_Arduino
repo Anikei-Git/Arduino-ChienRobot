@@ -2,11 +2,11 @@
  
 #define X_STEP_PIN A0
 #define X_DIR_PIN A1
-#define X_ENABLE_PIN 24
+#define X_ENABLE_PIN 38
  
 #define Y_STEP_PIN A6
 #define Y_DIR_PIN A7
-#define Y_ENABLE_PIN 26
+#define Y_ENABLE_PIN A2
 
 
  
@@ -56,8 +56,9 @@ void setup() {
   pinMode(Y_DIR_PIN, OUTPUT);
   pinMode(Y_ENABLE_PIN, OUTPUT);
  
-  digitalWrite(X_ENABLE_PIN, LOW);
-  digitalWrite(Y_ENABLE_PIN, LOW);
+ // a allumer si les moteurs ne démarrent pas immédiatement
+  //digitalWrite(X_ENABLE_PIN, LOW);
+  //digitalWrite(Y_ENABLE_PIN, LOW);
   
     //Debug
   Serial.begin(115200);
@@ -70,16 +71,10 @@ void setup() {
   gueule.attach(gueulePin);
   //setupGeule();
 
-  delay(500);
+  delay(1000);
 
   //bougerGueule();
 
-
-
-  //liaison des pin aux servos
- // queue.attach(queuePin);
-  //ueule.attach(gueulePin);
-  delay(2000); //délai pour replacer le robot après le snap des moteurs, on veut plus de temps que ca pour se placer donc 10-20s (était à 2000ms avant)
 }
  
 void moteurMove(long pas, int d_initial, int d_cible, bool dirX, bool dirY) {
@@ -158,7 +153,7 @@ void setupQueue(){
 
    Serial.println("Setup end");
 }
- 
+
 void remuerQueue()
 {
   //à changer si le servo est installé différement
@@ -211,6 +206,17 @@ void clignoterLED() {
  
 }
 
+void moteursOFF() {
+  digitalWrite(X_ENABLE_PIN, HIGH); //OFF
+  digitalWrite(Y_ENABLE_PIN, HIGH); // OFF 
+}
+
+void moteursON() {
+  digitalWrite(X_ENABLE_PIN, LOW);  // ON
+  digitalWrite(Y_ENABLE_PIN, LOW);  // ON
+  delay(100);
+}
+
 void loop() {
 
   avancer(0.6, true);
@@ -225,8 +231,11 @@ void loop() {
   delay(100); //a partir dici
   tourner(90, false);  
   delay(100);
+  moteursOFF();
+  delay(100);
   clignoterLED();
   delay(100);
+  moteursON();
   tourner(42, true);  //ajouté 2 degré
   delay(100);
   avancer(1.28, true);
@@ -234,12 +243,15 @@ void loop() {
   tourner(135, false);
   delay(100);
   remuerQueue();
+  moteursOFF();
   delay(25000); //mettre a 25000
+  moteursON();
   tourner(44, true);  
   delay(100);
   avancer(0.6, true);
   delay(100);
   tourner(285, true);  
   delay(500);
+  moteursOFF();
   while(1){}
 }
